@@ -6,6 +6,10 @@ import (
         "net/http"
         "os"
 )
+func enableCors(w *http.ResponseWriter) {
+        (*w).Header().Set("Access-Control-Allow-Origin", "*")
+        
+}
 
 func main() {
         // Define the port number
@@ -16,6 +20,7 @@ func main() {
 
         // Setup a basic endpoint
         http.HandleFunc("/api", func(w http.ResponseWriter, r *http.Request) {
+                enableCors(&w)
                 fmt.Fprint(w, "Hello, world!")
         })
 
