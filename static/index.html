@@ -10,7 +10,7 @@
 
             function sendMsg() {
 
-                const msg_text = document.getElementById("text")
+                const msg_text = document.getElementById("text").value;
 
                 fetch("http://167.172.183.113:80/api/msg", 
                 {
