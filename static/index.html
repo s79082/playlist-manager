@@ -7,11 +7,21 @@
                 .then((res) => res.text())
                 .then((text) => console.log(text));
             }
+
+            function sendMsg() {
+
+                const msg_text = document.getElementById("text")
+
+                fetch("http://167.172.183.113:80/api/msg", 
+                {body: JSON.stringify({message: msg_text})})
+                .then((res) => res.text())
+                .then((text) => console.log(text));
+            }
         </script>
     </head>
     <body>
-        Hello World!
-,
-        <button onclick="sendRequest()">click meee</button>
+        Hello World! Send me a message:<br>
+        <input type="text" value="hi" id="text"/>
+        <button onclick="sendMsg()">click meee</button>
     </body>
 </html>
