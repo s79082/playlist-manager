@@ -80,5 +80,8 @@ func conn(){
 	defer close(client, ctx, cancel)
 	
 	// Ping mongoDB with Ping method
-	ping(client, ctx)
+	err = ping(client, ctx)
+	if err != nil {
+		println(err.Error())
+	}
 }
