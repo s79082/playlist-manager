@@ -70,7 +70,7 @@ func conn(){
 
 	// Get Client, Context, CancelFunc and
 	// err from connect method.
-	client, ctx, cancel, err := connect("mongodb://localhost:27017")
+	client, ctx, cancel, err := connect("mongodb://mongodb:27017")
 	if err != nil {
 		panic(err)
 	}
