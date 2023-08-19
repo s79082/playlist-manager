@@ -11,7 +11,7 @@ func enableCors(w *http.ResponseWriter) {
         
 }
 
-func main() {
+/*func main() {
         // Define the port number
         const port = 80
 
@@ -33,3 +33,5 @@ func main() {
                 log.Fatalf("Error starting server: %v", err)
         }
 }
+
+*/
