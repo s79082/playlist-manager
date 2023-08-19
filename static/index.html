@@ -3,12 +3,9 @@
     <head>
         <script>
             function sendRequest() {
-                fetch("http://167.172.183.113:80/api", {
-	headers: {
-        "Access-Control-Allow-Origin": "*"
-    }
-
-}).then((res) => res.body).then((body) => alert(body.json));
+                fetch("http://167.172.183.113:80/api")
+                .then((res) => res.json())
+                .then((json) => console.log(json));
             }
         </script>
     </head>
