@@ -1,10 +1,10 @@
 package main
 
 import (
-        //"fmt"
-        //"log"
+        "fmt"
+        "log"
         "net/http"
-        //"os"
+        "os"
 )
 func enableCors(w *http.ResponseWriter) {
         (*w).Header().Set("Access-Control-Allow-Origin", "*")
@@ -13,7 +13,8 @@ func enableCors(w *http.ResponseWriter) {
 
 func main() {
 
-/*
+
+        conn()
 
         // Define the port number
         const port = 80
@@ -22,8 +23,14 @@ func main() {
 	http.Handle("/", fs)
 
         // Setup a basic endpoint
-        http.HandleFunc("/api", func(w http.ResponseWriter, r *http.Request) {
+        http.HandleFunc("/api/playlist", func(w http.ResponseWriter, r *http.Request) {
                 enableCors(&w)
+
+                if r.Method == http.MethodGet {
+                        return;
+
+                }
+
                 fmt.Fprint(w, "Hello, world!")
         })
 
@@ -35,10 +42,9 @@ func main() {
                 os.Exit(3)
                 log.Fatalf("Error starting server: %v", err)
         }
-        */
+        
 
         println("hewwlo")
 
-        conn()
 }
 
