@@ -40,7 +40,9 @@ func handleConnection(w http.ResponseWriter, r *http.Request) {
 
 		fmt.Printf("Received: %s\n", p)
 
-		if err := conn.WriteMessage(messageType, p); err != nil {
+		echo := string(p) + " echoed"
+
+		if err := conn.WriteMessage(messageType, []byte(echo)); err != nil {
 			fmt.Println("Error during message writing:", err)
 			break
 		}
