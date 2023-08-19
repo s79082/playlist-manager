@@ -6,11 +6,45 @@ import (
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/gorilla/websocket"
 )
 
 func enableCors(w *http.ResponseWriter) {
 	(*w).Header().Set("Access-Control-Allow-Origin", "*")
 
+}
+
+var upgrader = websocket.Upgrader{
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
+}
+
+func handleConnection(w http.ResponseWriter, r *http.Request) {
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		fmt.Println("Error during connection upgradation:", err)
+		return
+	}
+	defer conn.Close()
+
+	fmt.Println("Client Connected")
+
+	for {
+		messageType, p, err := conn.ReadMessage()
+		if err != nil {
+			fmt.Println("Error during message reading:", err)
+			break
+		}
+
+		fmt.Printf("Received: %s\n", p)
+
+		if err := conn.WriteMessage(messageType, p); err != nil {
+			fmt.Println("Error during message writing:", err)
+			break
+		}
+	}
 }
 
 func main() {
@@ -43,6 +77,7 @@ func main() {
 
 		fmt.Fprint(w, "Hello, world!")
 	})
+	http.HandleFunc("/api/msg/ws", handleConnection)
 
 	// Start the HTTP server
 	address := fmt.Sprintf(":%d", port)

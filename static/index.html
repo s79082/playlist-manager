@@ -1,31 +1,41 @@
 <html>
 
-    <head>
-        <script>
-            function sendRequest() {
-                fetch("http://167.172.183.113:80/api")
+<head>
+    <script>
+        ws = new WebSocket('ws://167.172.183.113:80/api/msg/ws');
+        ws.onopen = () => console.log("open")
+        ws.onmessage = event => console.log(event.data);
+        ws.onclose = () => console.log("close");
+        function sendRequest() {
+            fetch("http://167.172.183.113:80/api")
                 .then((res) => res.text())
                 .then((text) => console.log(text));
+        }
+
+        function sendMsg() {
+
+            const msg_text = document.getElementById("text").value;
+
+            if (ws) {
+                ws.send(msg_text);
             }
 
-            function sendMsg() {
-
-                const msg_text = document.getElementById("text").value;
-
-                fetch("http://167.172.183.113:80/api/msg", 
+            fetch("http://167.172.183.113:80/api/msg",
                 {
-                    body: JSON.stringify({message: msg_text}),
+                    body: JSON.stringify({ message: msg_text }),
                     method: "POST"
-                
+
                 })
                 .then((res) => res.text())
                 .then((text) => console.log(text));
-            }
-        </script>
-    </head>
-    <body>
-        Hello World! Send me a message:<br>
-        <input type="text" value="hi" id="text"/>
-        <button onclick="sendMsg()">click meee</button>
-    </body>
+        }
+    </script>
+</head>
+
+<body>
+    Hello World! Send me a message:<br>
+    <input type="text" value="hi" id="text" />
+    <button onclick="sendMsg()">click meee</button>
+</body>
+
 </html>
