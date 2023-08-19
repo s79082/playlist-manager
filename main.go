@@ -11,8 +11,11 @@ func main() {
         // Define the port number
         const port = 80
 
+        fs := http.FileServer(http.Dir("./static"))
+	http.Handle("/", fs)
+
         // Setup a basic endpoint
-        http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+        http.HandleFunc("/api", func(w http.ResponseWriter, r *http.Request) {
                 fmt.Fprint(w, "Hello, world!")
         })
 
