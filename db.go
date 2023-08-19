@@ -77,6 +77,9 @@ func conn() {
 	}
 
 	coll := client.Database("playlists_db").Collection("playlists")
+
+	coll.InsertOne(ctx, bson.D{{"name", "techno"}, {"songs", bson.E{}}})
+
 	cur, err := coll.Find(ctx, bson.D{})
 	if err != nil {
 		return
