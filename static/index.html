@@ -13,7 +13,11 @@
                 const msg_text = document.getElementById("text")
 
                 fetch("http://167.172.183.113:80/api/msg", 
-                {body: JSON.stringify({message: msg_text})})
+                {
+                    body: JSON.stringify({message: msg_text}),
+                    method: "POST"
+                
+                })
                 .then((res) => res.text())
                 .then((text) => console.log(text));
             }
