@@ -66,7 +66,7 @@ func ping(client *mongo.Client, ctx context.Context) error{
 	return nil
 }
 
-func main(){
+func conn(){
 
 	// Get Client, Context, CancelFunc and
 	// err from connect method.
