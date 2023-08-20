@@ -102,9 +102,23 @@ func main() {
 		} else if r.Method == http.MethodPost {
 
 			var pl Playlist
-			json.NewDecoder(r.Body).Decode(&pl)
 
-			createPlaylist(&pl)
+			err := json.NewDecoder(r.Body).Decode(&pl)
+			if err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				w.Write([]byte(err.Error()))
+				return
+			}
+
+			err = createPlaylist(&pl)
+			if err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				w.Write([]byte(err.Error()))
+				return
+			}
+
+			w.Write(nil)
+			return
 
 		}
 
@@ -126,6 +140,7 @@ func main() {
 			}
 
 			w.Write(plBs)
+			return
 
 		}
 
