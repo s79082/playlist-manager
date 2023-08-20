@@ -59,6 +59,8 @@ func main() {
 	fs := http.FileServer(http.Dir("./static"))
 	http.Handle("/", fs)
 
+	createPlaylist(&Playlist{Name: "adsddsad", Songs: []Song{}})
+
 	// Setup a basic endpoint
 	http.HandleFunc("/api/playlist", func(w http.ResponseWriter, r *http.Request) {
 		enableCors(&w)
