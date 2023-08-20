@@ -8,6 +8,7 @@ services:
       - dbdata6:/data/db
 
   plman: 
+    container_name: plman_container
     image: plman
     ports:
       - '80:80'
