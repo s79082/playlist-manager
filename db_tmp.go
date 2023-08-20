@@ -25,6 +25,7 @@ func run() {
 	}
 
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	//mongo.Connect(ctx)
 	err = client.Connect(ctx)
 	if err != nil {
 		log.Fatal(err)
@@ -67,9 +68,15 @@ func createItem(collection *mongo.Collection, item Item) string {
 
 func getItem(collection *mongo.Collection, id string) *Item {
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
-	result := collection.FindOne(ctx, bson.M{"_id": id})
+
+	objectId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil
+	}
+
+	result := collection.FindOne(ctx, bson.M{"_id": objectId})
 	item := &Item{}
-	err := result.Decode(item)
+	err = result.Decode(item)
 	if err != nil {
 		log.Println("Error on getting one item: ", err)
 		return nil
