@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -61,7 +62,7 @@ func createItem(collection *mongo.Collection, item Item) string {
 		log.Fatal("Error on inserting new item: ", err)
 	}
 
-	return result.InsertedID.(string)
+	return result.InsertedID.(primitive.ObjectID).Hex()
 }
 
 func getItem(collection *mongo.Collection, id string) *Item {
