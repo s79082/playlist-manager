@@ -2,10 +2,12 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -67,35 +69,102 @@ func ping(client *mongo.Client, ctx context.Context) error {
 	return nil
 }
 
-func conn() {
+var client *mongo.Client
+var ctx context.Context
 
-	// Get Client, Context, CancelFunc and
-	// err from connect method.
+var DB *mongo.Database
+
+type Link struct {
+	Ref       string `bson:"ref"`
+	Timestamp string `bson:"timestamp"`
+}
+
+type Song struct {
+	Name  string `bson:"name"`
+	Links []Link `bson:"links"`
+}
+
+type Playlist struct {
+	Name  string `bson:"name"`
+	Songs []Song `bson:"songs"`
+}
+
+func connectDB(dbName string) (*mongo.Database, context.Context, context.CancelFunc) {
+
 	client, ctx, cancel, err := connect("mongodb://mongodb:27017")
 	if err != nil {
 		panic(err)
 	}
 
-	coll := client.Database("playlists_db").Collection("playlists")
+	db := client.Database(dbName)
 
-	coll.InsertOne(ctx, bson.D{{"name", "techno"}, {"songs", bson.E{}}})
+	return db, ctx, cancel
+}
+
+func listPlaylists() []Playlist {
+
+	coll := DB.Collection("playlists")
 
 	cur, err := coll.Find(ctx, bson.D{})
 	if err != nil {
-		return
+		return nil
 	}
-	var results []bson.M
-	cur.All(ctx, &results)
 
-	fmt.Println(results)
+	var result []Playlist
+	cur.All(ctx, &result)
 
-	// Release resource when the main
-	// function is returned.
-	defer close(client, ctx, cancel)
+	return result
 
-	// Ping mongoDB with Ping method
-	err = ping(client, ctx)
+}
+
+func createPlaylist(pl *Playlist) error {
+
+	DB.Collection("playlists").InsertOne(ctx, pl)
+	return nil
+}
+
+func getPlaylistById(id string) (*Playlist, error) {
+
+	coll := DB.Collection("playlists")
+
+	objectId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		println(err.Error())
+		return nil, err
 	}
+
+	res := coll.FindOne(ctx, bson.M{"_id": objectId})
+	if res == nil {
+		return nil, errors.New("not found")
+	}
+
+	var result Playlist
+
+	res.Decode(&result)
+
+	return &result, nil
+
+}
+
+func addSongsToPlaylist(pid string, songs []Song) error {
+
+	pl, err := getPlaylistById(pid)
+
+	coll := DB.Collection("playlists")
+
+	objectId, err := primitive.ObjectIDFromHex(pid)
+	if err != nil {
+		return err
+	}
+
+	pl.Songs = append(pl.Songs, songs...)
+
+	coll.UpdateByID(ctx, objectId, pl)
+
+	return nil
+}
+
+func Init() {
+
+	DB, ctx, _ = connectDB("playlists_db")
+
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -51,8 +52,7 @@ func handleConnection(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 
-	conn()
-
+	Init()
 	// Define the port number
 	const port = 80
 
@@ -64,12 +64,74 @@ func main() {
 		enableCors(&w)
 
 		if r.Method == http.MethodGet {
-			return
+
+			dtoBs, err := io.ReadAll(r.Body)
+			if err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				w.Write([]byte(err.Error()))
+				return
+			}
+
+			var dto struct {
+				Id string `json:"id"`
+			}
+
+			err = json.Unmarshal(dtoBs, &dto)
+			if err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				w.Write([]byte(err.Error()))
+				return
+			}
+
+			pl, err := getPlaylistById(dto.Id)
+			if err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				w.Write([]byte(err.Error()))
+				return
+			}
+
+			plBs, err := json.Marshal(pl)
+			if err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				w.Write([]byte(err.Error()))
+				return
+			}
+
+			w.Write(plBs)
+
+		} else if r.Method == http.MethodPost {
+
+			var pl Playlist
+			json.NewDecoder(r.Body).Decode(&pl)
+
+			createPlaylist(&pl)
 
 		}
 
-		fmt.Fprint(w, "Hello, world!")
+		w.WriteHeader(http.StatusMethodNotAllowed)
 	})
+
+	http.HandleFunc("/api/playlists", func(w http.ResponseWriter, r *http.Request) {
+		enableCors(&w)
+
+		if r.Method == http.MethodGet {
+
+			pls := listPlaylists()
+
+			plBs, err := json.Marshal(pls)
+			if err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				w.Write([]byte(err.Error()))
+				return
+			}
+
+			w.Write(plBs)
+
+		}
+
+		w.WriteHeader(http.StatusMethodNotAllowed)
+	})
+
 	http.HandleFunc("/api/msg", func(w http.ResponseWriter, r *http.Request) {
 		enableCors(&w)
 
