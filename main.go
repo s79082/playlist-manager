@@ -52,8 +52,8 @@ func handleConnection(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 
-	run()
-	return
+	//run()
+	//return
 
 	Init()
 	// Define the port number
